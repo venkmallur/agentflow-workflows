@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)' }}>
         {/* Sidebar placeholder */}
         <aside style={{ width: '250px', background: 'var(--bg-secondary)', borderRight: '1px solid var(--border-glass)', padding: '24px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--accent-blue)', marginBottom: '32px' }}>AgentFlow Workflows</div>
+          <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--accent-blue)', marginBottom: '32px' }}>Healio Workflows</div>
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
             <a href="/dashboard/workflows" style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '8px 12px', borderRadius: 'var(--radius-sm)', background: 'var(--bg-glass)' }}>Workflows</a>
             <a href="/dashboard/members" style={{ color: 'var(--text-secondary)', textDecoration: 'none', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>Members</a>

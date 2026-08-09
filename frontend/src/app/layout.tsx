@@ -3,7 +3,7 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'AgentFlow Workflows â€” AI Agent Workflow Builder',
+  title: 'Healio Workflows â€” AI Agent Workflow Builder',
   description: 'Build stunning AI workflows',
 };
 
