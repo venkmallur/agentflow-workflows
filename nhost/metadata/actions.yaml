@@ -1,0 +1,30 @@
+actions:
+  - name: triggerWorkflowRun
+    definition:
+      handler: http://functions:3000/api/trigger-workflow-run
+      forward_client_headers: true
+      kind: synchronous
+      type: mutation
+    permissions:
+      - role: user
+  - name: approveStep
+    definition:
+      handler: http://functions:3000/api/approve-step
+      forward_client_headers: true
+      kind: synchronous
+      type: mutation
+    permissions:
+      - role: user
+  - name: saveWorkflow
+    definition:
+      handler: http://functions:3000/api/save-workflow
+      forward_client_headers: true
+      kind: synchronous
+      type: mutation
+    permissions:
+      - role: user
+custom_types:
+  enums: []
+  input_objects: []
+  objects: []
+  scalars: []

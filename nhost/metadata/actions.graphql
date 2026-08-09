@@ -1,0 +1,47 @@
+type Mutation {
+  triggerWorkflowRun(workflow_id: uuid!): TriggerWorkflowRunOutput!
+  approveStep(step_run_id: uuid!): ApproveStepOutput!
+  saveWorkflow(input: SaveWorkflowInput!): SaveWorkflowOutput!
+}
+
+type TriggerWorkflowRunOutput {
+  workflow_run_id: uuid!
+  success: Boolean!
+  message: String
+}
+
+type ApproveStepOutput {
+  success: Boolean!
+  message: String
+  workflow_run_id: uuid
+}
+
+input SaveWorkflowInput {
+  id: uuid
+  org_id: uuid!
+  name: String!
+  description: String
+  steps: [StepInput!]!
+  triggers: [TriggerInput!]!
+}
+
+input StepInput {
+  id: uuid
+  name: String!
+  type: String!
+  step_order: Int!
+  config: jsonb!
+}
+
+input TriggerInput {
+  id: uuid
+  type: String!
+  config: jsonb!
+  enabled: Boolean!
+}
+
+type SaveWorkflowOutput {
+  workflow_id: uuid!
+  success: Boolean!
+  message: String
+}

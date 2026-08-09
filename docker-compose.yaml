@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./nhost/migrations/default/1_init/up.sql:/docker-entrypoint-initdb.d/01_init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  graphql-engine:
+    image: hasura/graphql-engine:v2.40.0
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://postgres:postgres@postgres:5432/postgres"
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ADMIN_SECRET: "nhost-admin-secret"
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256","key":"agentflow-workflows-jwt-secret-key-min-32-chars!"}'
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "public"
+      HASURA_GRAPHQL_ENABLE_REMOTE_SCHEMA_PERMISSIONS: "true"
+      HASURA_GRAPHQL_METADATA_DIR: /metadata
+    volumes:
+      - ./nhost/metadata:/metadata
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  auth:
+    image: nhost/hasura-auth:0.26.0
+    ports:
+      - "4000:4000"
+    depends_on:
+      graphql-engine:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    restart: always
+    environment:
+      AUTH_HOST: "0.0.0.0"
+      AUTH_PORT: "4000"
+      HASURA_GRAPHQL_GRAPHQL_URL: "http://graphql-engine:8080/v1/graphql"
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://postgres:postgres@postgres:5432/postgres"
+      HASURA_GRAPHQL_ADMIN_SECRET: "nhost-admin-secret"
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256","key":"agentflow-workflows-jwt-secret-key-min-32-chars!"}'
+      AUTH_CLIENT_URL: "http://localhost:3001"
+      AUTH_ACCESS_CONTROL_ALLOWED_REDIRECT_URLS: "http://localhost:3001"
+      AUTH_SMTP_HOST: "mailhog"
+      AUTH_SMTP_PORT: "1025"
+      AUTH_SMTP_SENDER: "auth@AgentFlow.local"
+      AUTH_SMTP_SECURE: "false"
+      AUTH_SMTP_AUTH_PASS: ""
+      AUTH_SMTP_AUTH_USER: ""
+      AUTH_EMAIL_SIGNIN_EMAIL_VERIFIED_REQUIRED: "false"
+      AUTH_ANONYMOUS_USERS_ENABLED: "false"
+      AUTH_DISABLE_NEW_USERS: "false"
+      AUTH_ACCESS_CONTROL_ALLOWED_EMAILS: ""
+      AUTH_USER_DEFAULT_ROLE: "user"
+      AUTH_USER_DEFAULT_ALLOWED_ROLES: "user,me"
+      AUTH_LOCALE_DEFAULT: "en"
+      AUTH_LOCALE_ALLOWED_LOCALES: "en"
+
+  functions:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./functions:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      graphql-engine:
+        condition: service_healthy
+    restart: always
+    command: >
+      sh -c "
+        if [ -f package.json ]; then
+          npm install --prefer-offline 2>/dev/null;
+          npm run dev;
+        else
+          echo 'No package.json found, sleeping...';
+          sleep infinity;
+        fi
+      "
+    environment:
+      HASURA_GRAPHQL_URL: "http://graphql-engine:8080/v1/graphql"
+      HASURA_GRAPHQL_ADMIN_SECRET: "nhost-admin-secret"
+      NHOST_WEBHOOK_SECRET: "nhost-webhook-secret"
+      GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
+      NODE_ENV: "development"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  pgdata:

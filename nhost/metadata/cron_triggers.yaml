@@ -1,0 +1,5 @@
+- name: scheduled_workflow_trigger
+  webhook: http://functions:3000/api/scheduled-trigger
+  schedule: '*/5 * * * *'
+  include_in_metadata: true
+  payload: {}
