@@ -81,7 +81,7 @@ export const executeStep = async (stepType: string, config: any, previousOutput:
       const condition = config.condition || 'false';
       let evalResult = false;
       try {
-        const check = new Function('previous_output', \`return \${condition}\`);
+        const check = new Function('previous_output', `return ${condition}`);
         evalResult = check(previousOutput);
       } catch (err) {
         console.error('Condition evaluation failed', err);
