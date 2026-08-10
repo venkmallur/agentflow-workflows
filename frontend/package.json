@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.8.7",
-    "@nhost/nextjs": "^3.0.4",
-    "@nhost/react-apollo": "^3.0.4",
+    "@nhost/nextjs": "latest",
+    "@nhost/react-apollo": "latest",
     "framer-motion": "^10.16.4",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.14.2",
