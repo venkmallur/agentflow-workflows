@@ -1,7 +1,7 @@
 actions:
   - name: triggerWorkflowRun
     definition:
-      handler: '{{NHOST_BACKEND_URL}}/v1/functions/api/trigger-workflow-run'
+      handler: https://lwvfchscjltbpnqdelnw.nhost.run/v1/functions/api/trigger-workflow-run
       forward_client_headers: true
       kind: synchronous
       type: mutation
@@ -9,7 +9,7 @@ actions:
       - role: user
   - name: approveStep
     definition:
-      handler: '{{NHOST_BACKEND_URL}}/v1/functions/api/approve-step'
+      handler: https://lwvfchscjltbpnqdelnw.nhost.run/v1/functions/api/approve-step
       forward_client_headers: true
       kind: synchronous
       type: mutation
@@ -17,7 +17,7 @@ actions:
       - role: user
   - name: saveWorkflow
     definition:
-      handler: '{{NHOST_BACKEND_URL}}/v1/functions/api/save-workflow'
+      handler: https://lwvfchscjltbpnqdelnw.nhost.run/v1/functions/api/save-workflow
       forward_client_headers: true
       kind: synchronous
       type: mutation
