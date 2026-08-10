@@ -1,10 +1,2 @@
 [global]
 id = "agentflow-workflows"
-
-[development]
-start_postgres = true
-start_hasura = true
-start_auth = true
-start_storage = true
-start_functions = true
-start_mailhog = true
