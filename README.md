@@ -1,4 +1,4 @@
-# AgentFlow Workflows â€” AI Agent Workflow Builder
+# AgentFlow Workflows — AI Agent Workflow Builder
 
 A mini n8n purpose-built for chaining AI agent steps, with two-layer permissions, live subscriptions, and cross-org isolation.
 
@@ -11,20 +11,20 @@ A mini n8n purpose-built for chaining AI agent steps, with two-layer permissions
 - **Functions**: Node.js/TypeScript serverless handlers (Express)
 - **Frontend**: Next.js 14 (App Router) + Apollo Client + Framer Motion
 - **Auth**: nhost Auth (JWT-based)
-- **LLM**: Google Gemini 2.0 Flash (free tier) â€” stubbed if no API key
+- **LLM**: Google Gemini 2.0 Flash (free tier) — stubbed if no API key
 - **Real-time**: GraphQL Subscriptions via WebSocket
 
 ## Features
 
-- ðŸ¢ **Multi-org support** with owner/editor/viewer roles
-- ðŸ”’ **Two-layer permissions**: org+role scoping (Hasura) + step-level gating (Action handlers)
-- ðŸ¤– **6 step types**: LLM Call, HTTP Request, DB Write, Notify, Conditional Branch, Approval Gate
-- ðŸš€ **4 trigger types**: Manual, Webhook, Scheduled (cron), Database Event
-- ðŸ“¡ **Live run monitoring** via GraphQL subscriptions
-- â¸ï¸ **Approval gates** that pause workflows until authorized approval
-- ðŸ“Š **Usage quotas** per organization with real-time tracking
-- ðŸ”„ **Retry logic** for failed external calls (LLM, HTTP)
-- ðŸŽ¨ **Premium dark UI** with glassmorphism and micro-animations
+- 🏢 **Multi-org support** with owner/editor/viewer roles
+- 🔒 **Two-layer permissions**: org+role scoping (Hasura) + step-level gating (Action handlers)
+- 🤖 **6 step types**: LLM Call, HTTP Request, DB Write, Notify, Conditional Branch, Approval Gate
+- 🚀 **4 trigger types**: Manual, Webhook, Scheduled (cron), Database Event
+- 📡 **Live run monitoring** via GraphQL subscriptions
+- ⏸️ **Approval gates** that pause workflows until authorized approval
+- 📊 **Usage quotas** per organization with real-time tracking
+- 🔄 **Retry logic** for failed external calls (LLM, HTTP)
+- 🎨 **Premium dark UI** with glassmorphism and micro-animations
 
 ## Prerequisites
 
@@ -108,22 +108,22 @@ Then run the seed SQL to set up organizations and memberships (update the user U
 ## Architecture
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                    Frontend (Next.js)                 â”‚
-â”‚  Auth â”‚ Workflow Builder â”‚ Run Monitor â”‚ Approval UI  â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-               â”‚ GraphQL      â”‚ Subscriptions (WS)
-               â–¼              â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚              Hasura GraphQL Engine                    â”‚
-â”‚  Row-Level Permissions â”‚ Actions â”‚ Event Triggers     â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-           â”‚              â”‚            â”‚
-           â–¼              â–¼            â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚  PostgreSQL  â”‚  â”‚  Functions   â”‚  â”‚  Hasura Auth  â”‚
-â”‚  (Data)      â”‚  â”‚  (Handlers)  â”‚  â”‚  (JWT)        â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌─────────────────────────────────────────────────────┐
+│                    Frontend (Next.js)                 │
+│  Auth │ Workflow Builder │ Run Monitor │ Approval UI  │
+└──────────────┬──────────────┬───────────────────────┘
+               │ GraphQL      │ Subscriptions (WS)
+               ▼              ▼
+┌─────────────────────────────────────────────────────┐
+│              Hasura GraphQL Engine                    │
+│  Row-Level Permissions │ Actions │ Event Triggers     │
+└──────────┬──────────────┬────────────┬──────────────┘
+           │              │            │
+           ▼              ▼            ▼
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│  PostgreSQL  │  │  Functions   │  │  Hasura Auth  │
+│  (Data)      │  │  (Handlers)  │  │  (JWT)        │
+└──────────────┘  └──────────────┘  └──────────────┘
 ```
 
 ## Permission Model
@@ -158,24 +158,24 @@ curl -X POST http://localhost:3000/api/webhook-trigger/<workflow-id> \
 
 ```
 agentflow-workflows/
-â”œâ”€â”€ docker-compose.yaml          # Full dev stack
-â”œâ”€â”€ nhost/
-â”‚   â”œâ”€â”€ migrations/              # PostgreSQL schema
-â”‚   â”œâ”€â”€ metadata/                # Hasura config (tables, permissions, actions)
-â”‚   â””â”€â”€ seeds/                   # Seed data
-â”œâ”€â”€ functions/                   # Serverless handlers
-â”‚   â””â”€â”€ src/
-â”‚       â”œâ”€â”€ server.ts            # Express server
-â”‚       â”œâ”€â”€ handlers/            # Action & trigger handlers
-â”‚       â””â”€â”€ utils/               # Shared utilities
-â”œâ”€â”€ frontend/                    # Next.js app
-â”‚   â””â”€â”€ src/
-â”‚       â”œâ”€â”€ app/                 # Pages (App Router)
-â”‚       â”œâ”€â”€ components/          # UI components
-â”‚       â”œâ”€â”€ graphql/             # Operations
-â”‚       â””â”€â”€ lib/                 # Config
-â”œâ”€â”€ WRITEUP.md                   # Technical write-up
-â””â”€â”€ README.md                    # This file
+├── docker-compose.yaml          # Full dev stack
+├── nhost/
+│   ├── migrations/              # PostgreSQL schema
+│   ├── metadata/                # Hasura config (tables, permissions, actions)
+│   └── seeds/                   # Seed data
+├── functions/                   # Serverless handlers
+│   └── src/
+│       ├── server.ts            # Express server
+│       ├── handlers/            # Action & trigger handlers
+│       └── utils/               # Shared utilities
+├── frontend/                    # Next.js app
+│   └── src/
+│       ├── app/                 # Pages (App Router)
+│       ├── components/          # UI components
+│       ├── graphql/             # Operations
+│       └── lib/                 # Config
+├── WRITEUP.md                   # Technical write-up
+└── README.md                    # This file
 ```
 
 ## API Keys
