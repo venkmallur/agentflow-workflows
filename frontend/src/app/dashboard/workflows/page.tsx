@@ -1,13 +1,18 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import { GET_ORG_WORKFLOWS } from '@/graphql/queries';
+import { INSERT_WORKFLOW } from '@/graphql/mutations';
 import { useOrg } from '@/context/OrgContext';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function WorkflowsList() {
   const { currentOrg } = useOrg();
+  const router = useRouter();
+  
+  const [insertWorkflow, { loading: isCreating }] = useMutation(INSERT_WORKFLOW);
   
   const { data, loading, error } = useQuery(GET_ORG_WORKFLOWS, {
     variables: { orgId: currentOrg?.id },
@@ -25,13 +30,35 @@ export default function WorkflowsList() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <h1 style={{ fontSize: '32px', fontWeight: 'bold' }}>Workflows</h1>
         {(currentOrg.role === 'owner' || currentOrg.role === 'admin' || currentOrg.role === 'editor') && (
-          <button className="btn btn-primary">+ New Workflow</button>
+          <button 
+            className="btn btn-primary" 
+            onClick={async () => {
+              try {
+                const { data } = await insertWorkflow({
+                  variables: {
+                    orgId: currentOrg.id,
+                    name: 'My New AI Workflow',
+                    description: 'A brand new workflow ready to be configured.',
+                  },
+                });
+                if (data?.insert_workflows_one?.id) {
+                  router.push(`/dashboard/workflows/${data.insert_workflows_one.id}`);
+                }
+              } catch (err) {
+                console.error(err);
+                alert('Failed to create workflow');
+              }
+            }}
+            disabled={isCreating}
+          >
+            {isCreating ? 'Creating...' : '+ New Workflow'}
+          </button>
         )}
       </div>
 
       {workflows.length === 0 ? (
         <div className="glass-card" style={{ textAlign: 'center', padding: '64px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>âœ¨</div>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>✨</div>
           <h2 style={{ marginBottom: '8px' }}>No workflows yet</h2>
           <p style={{ color: 'var(--text-secondary)' }}>Create your first AI workflow to get started.</p>
         </div>

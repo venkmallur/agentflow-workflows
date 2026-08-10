@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_WORKFLOW } from '@/graphql/queries';
-import { TRIGGER_WORKFLOW_RUN } from '@/graphql/mutations';
+import { TRIGGER_WORKFLOW_RUN, INSERT_WORKFLOW_STEP } from '@/graphql/mutations';
 import { STEP_TYPES } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -10,11 +11,14 @@ import { motion } from 'framer-motion';
 
 export default function WorkflowEditor({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { data, loading, error } = useQuery(GET_WORKFLOW, {
+  const { data, loading, error, refetch } = useQuery(GET_WORKFLOW, {
     variables: { id: params.id }
   });
   
   const [triggerRun, { loading: triggering }] = useMutation(TRIGGER_WORKFLOW_RUN);
+  const [insertStep, { loading: insertingStep }] = useMutation(INSERT_WORKFLOW_STEP);
+  
+  const [isAddingStep, setIsAddingStep] = useState(false);
 
   if (loading) return <div className="pulse-animation" style={{ color: 'var(--accent-blue)' }}>Loading workflow...</div>;
   if (error) return <div style={{ color: 'var(--accent-red)' }}>Error loading workflow.</div>;
@@ -24,7 +28,7 @@ export default function WorkflowEditor({ params }: { params: { id: string } }) {
 
   const handleRun = async () => {
     try {
-      const res = await triggerRun({ variables: { workflowId: workflow.id, inputPayload: {} } });
+      const res = await triggerRun({ variables: { workflowId: workflow.id } });
       if (res.data?.triggerWorkflowRun?.run_id) {
         router.push(`/dashboard/workflows/${workflow.id}/runs/${res.data.triggerWorkflowRun.run_id}`);
       }
@@ -44,7 +48,7 @@ export default function WorkflowEditor({ params }: { params: { id: string } }) {
         <div style={{ display: 'flex', gap: '12px' }}>
           <button className="btn btn-secondary">Save Changes</button>
           <button className="btn btn-primary" onClick={handleRun} disabled={triggering}>
-            {triggering ? 'Starting...' : 'â–¶ Run Workflow'}
+            {triggering ? 'Starting...' : '▶ Run Workflow'}
           </button>
         </div>
       </header>
@@ -79,8 +83,53 @@ export default function WorkflowEditor({ params }: { params: { id: string } }) {
               );
             })}
             
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '24px' }}>
-              <button className="btn btn-secondary" style={{ borderRadius: '50%', width: '48px', height: '48px', fontSize: '24px' }}>+</button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '24px', width: '100%' }}>
+              {!isAddingStep ? (
+                <button 
+                  className="btn btn-secondary" 
+                  style={{ borderRadius: '50%', width: '48px', height: '48px', fontSize: '24px' }}
+                  onClick={() => setIsAddingStep(true)}
+                >
+                  +
+                </button>
+              ) : (
+                <div className="glass-card" style={{ padding: '16px', width: '100%' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '16px' }}>Select Step Type</h3>
+                    <button onClick={() => setIsAddingStep(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>✕</button>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    {Object.entries(STEP_TYPES).map(([type, info]) => (
+                      <button 
+                        key={type}
+                        className="btn btn-secondary"
+                        style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '12px' }}
+                        disabled={insertingStep}
+                        onClick={async () => {
+                          try {
+                            await insertStep({
+                              variables: {
+                                workflowId: workflow.id,
+                                name: `New ${info.label}`,
+                                type: type,
+                                stepOrder: workflow.steps.length + 1
+                              }
+                            });
+                            setIsAddingStep(false);
+                            refetch();
+                          } catch (err) {
+                            console.error(err);
+                            alert('Failed to add step');
+                          }
+                        }}
+                      >
+                        <span style={{ fontSize: '20px' }}>{info.icon}</span>
+                        {info.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

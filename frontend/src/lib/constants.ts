@@ -1,10 +1,10 @@
 export const STEP_TYPES = {
-  llm_call: { label: 'LLM Call', icon: 'ðŸ¤–' },
-  http_request: { label: 'HTTP Request', icon: 'ðŸŒ' },
-  db_write: { label: 'DB Write', icon: 'ðŸ’¾' },
-  notify: { label: 'Notify', icon: 'ðŸ””' },
-  conditional_branch: { label: 'Condition', icon: 'ðŸ”€' },
-  approval_gate: { label: 'Approval', icon: 'âœ‹' }
+  llm_call: { label: 'LLM Call', icon: '🤖' },
+  http_request: { label: 'HTTP Request', icon: '🌐' },
+  db_write: { label: 'DB Write', icon: '💾' },
+  notify: { label: 'Notify', icon: '🔔' },
+  conditional_branch: { label: 'Condition', icon: '🔀' },
+  approval_gate: { label: 'Approval', icon: '✋' }
 };
 
 export const STATUS_COLORS = {

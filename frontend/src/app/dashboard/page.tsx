@@ -12,8 +12,8 @@ export default function DashboardHome() {
   const router = useRouter();
 
   useEffect(() => {
-    if (data?.organization_members && data.organization_members.length > 0 && !currentOrg) {
-      const member = data.organization_members[0];
+    if (data?.org_members && data.org_members.length > 0 && !currentOrg) {
+      const member = data.org_members[0];
       setCurrentOrg({
         id: member.organization.id,
         name: member.organization.name,
@@ -36,7 +36,7 @@ export default function DashboardHome() {
     <div>
       <h1 style={{ fontSize: '24px', marginBottom: '16px' }}>Select an Organization</h1>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
-        {data?.organization_members.map((member: any) => (
+        {data?.org_members.map((member: any) => (
           <div 
             key={member.organization.id} 
             className="glass-card" 
