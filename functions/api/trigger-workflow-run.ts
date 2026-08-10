@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { query } from '../utils/hasura-client';
-import { getOrgMembership, canTriggerRun } from '../utils/permissions';
-import { executeWorkflowSteps } from '../utils/workflow-executor';
+import { query } from '../src/utils/hasura-client';
+import { getOrgMembership, canTriggerRun } from '../src/utils/permissions';
+import { executeWorkflowSteps } from '../src/utils/workflow-executor';
 
 export default async (req: Request, res: Response) => {
   try {

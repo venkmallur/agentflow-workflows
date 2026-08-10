@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { query } from '../utils/hasura-client';
-import { getOrgMembership, canManageWorkflow, checkStepTypePermission, checkTriggerTypePermission } from '../utils/permissions';
+import { query } from '../src/utils/hasura-client';
+import { getOrgMembership, canManageWorkflow, checkStepTypePermission, checkTriggerTypePermission } from '../src/utils/permissions';
 
 export default async (req: Request, res: Response) => {
   try {

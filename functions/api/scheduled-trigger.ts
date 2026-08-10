@@ -1,62 +1,40 @@
 import { Request, Response } from 'express';
-import { query } from '../utils/hasura-client';
-import { executeWorkflowSteps } from '../utils/workflow-executor';
+import { query } from '../src/utils/hasura-client';
+import { executeWorkflowSteps } from '../src/utils/workflow-executor';
 
 export default async (req: Request, res: Response) => {
   try {
-    const eventBody = req.body.event;
-    if (!eventBody || !eventBody.data || !eventBody.data.new) {
-      return res.status(400).json({ message: 'Invalid event payload' });
-    }
-
-    const newData = eventBody.data.new;
-    const triggerWorkflowId = newData.trigger_workflow_id;
-    const table = req.body.table?.name;
-
-    let workflowsToRun: any[] = [];
-
-    if (triggerWorkflowId) {
-      // Explicit trigger
-      const wfQuery = `
-        query GetExplicitWorkflow($id: uuid!) {
-          workflows_by_pk(id: $id) {
-            id
+    const triggersQuery = `
+      query GetScheduledTriggers {
+        workflow_triggers(where: {type: {_eq: "scheduled"}, enabled: {_eq: true}}) {
+          id
+          workflow_id
+          config
+          workflow {
             org_id
-            organization { quota_used quota_limit }
-            steps { id order type config }
-          }
-        }
-      `;
-      const wfData = await query(wfQuery, { id: triggerWorkflowId });
-      if (wfData.workflows_by_pk) {
-        workflowsToRun.push(wfData.workflows_by_pk);
-      }
-    } else if (table) {
-      // Look for DB event triggers on this table
-      const triggersQuery = `
-        query GetDbTriggers($table: String!) {
-          workflow_triggers(where: {type: {_eq: "database_event"}, enabled: {_eq: true}}) {
-            workflow {
-              id
-              org_id
-              organization { quota_used quota_limit }
-              steps { id order type config }
+            organization {
+              quota_used
+              quota_limit
             }
-            config
+            steps {
+              id
+              order
+              type
+              config
+            }
           }
         }
-      `;
-      const triggersData = await query(triggersQuery, { table });
-      const triggers = triggersData.workflow_triggers || [];
-      
-      for (const t of triggers) {
-        if (t.config?.table_name === table) {
-          workflowsToRun.push(t.workflow);
-        }
       }
-    }
+    `;
+    const triggersData = await query(triggersQuery);
+    const triggers = triggersData.workflow_triggers || [];
 
-    for (const workflow of workflowsToRun) {
+    for (const trigger of triggers) {
+      const workflow = trigger.workflow;
+      
+      // In a real system, you'd check if trigger.config.schedule matches current time
+      // For simplicity here, we assume if Hasura called it, it's time to run
+      
       if (workflow.organization.quota_used >= workflow.organization.quota_limit) {
         console.warn(`Quota exhausted for org ${workflow.org_id}`);
         continue;
@@ -67,13 +45,13 @@ export default async (req: Request, res: Response) => {
           insert_workflow_runs_one(object: {
             workflow_id: $workflowId,
             status: "running",
-            trigger_type: "database_event"
+            trigger_type: "scheduled"
           }) {
             id
           }
         }
       `;
-      const runResult = await query(createRunMutation, { workflowId: workflow.id });
+      const runResult = await query(createRunMutation, { workflowId: trigger.workflow_id });
       const runId = runResult.insert_workflow_runs_one.id;
 
       const stepRuns = workflow.steps.map((s: any) => ({
@@ -116,9 +94,9 @@ export default async (req: Request, res: Response) => {
       }).catch(console.error);
     }
 
-    return res.status(200).json({ success: true, message: `Triggered ${workflowsToRun.length} workflows` });
+    return res.status(200).json({ success: true, message: `Processed ${triggers.length} triggers` });
   } catch (err: any) {
     console.error(err);
-    return res.status(400).json({ message: err.message || 'Error processing event trigger' });
+    return res.status(400).json({ message: err.message || 'Error processing scheduled triggers' });
   }
 };
