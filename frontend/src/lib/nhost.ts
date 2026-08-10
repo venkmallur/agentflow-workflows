@@ -1,8 +1,9 @@
 import { NhostClient } from '@nhost/nextjs';
 
+const subdomain = process.env.NEXT_PUBLIC_NHOST_SUBDOMAIN || 'local';
+const region = process.env.NEXT_PUBLIC_NHOST_REGION || '';
+
 export const nhost = new NhostClient({
-  subdomain: process.env.NEXT_PUBLIC_NHOST_SUBDOMAIN || 'local',
-  region: process.env.NEXT_PUBLIC_NHOST_REGION || '',
-  graphqlUrl: process.env.NEXT_PUBLIC_GRAPHQL_URL,
-  functionsUrl: process.env.NEXT_PUBLIC_FUNCTIONS_URL,
+  subdomain,
+  region,
 });
