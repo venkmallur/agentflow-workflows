@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
 
-const endpoint = process.env.NHOST_GRAPHQL_URL || (process.env.NHOST_BACKEND_URL ? \`\${process.env.NHOST_BACKEND_URL}/v1/graphql\` : 'https://lwvfchscjltbpnqdelnw.nhost.run/v1/graphql');
+const endpoint = process.env.NHOST_GRAPHQL_URL || (process.env.NHOST_BACKEND_URL ? `${process.env.NHOST_BACKEND_URL}/v1/graphql` : 'https://lwvfchscjltbpnqdelnw.nhost.run/v1/graphql');
 const adminSecret = process.env.NHOST_ADMIN_SECRET || process.env.HASURA_GRAPHQL_ADMIN_SECRET || 'myadminsecretkey';
 
 export const hasuraClient = new GraphQLClient(endpoint, {
