@@ -5,6 +5,7 @@ import { GET_WORKFLOW } from '@/graphql/queries';
 import { TRIGGER_WORKFLOW_RUN } from '@/graphql/mutations';
 import { STEP_TYPES } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function WorkflowEditor({ params }: { params: { id: string } }) {
